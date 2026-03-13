@@ -30,12 +30,12 @@
         {
             pbLogo = new PictureBox();
             pnMain = new Panel();
-            lbLogin = new Label();
-            txtlogin = new TextBox();
-            lbPass = new Label();
-            txtPass = new TextBox();
-            btnLogin = new Button();
             btnGuest = new Button();
+            btnLogin = new Button();
+            txtPass = new TextBox();
+            lbPass = new Label();
+            txtLogin = new TextBox();
+            lbLogin = new Label();
             ((System.ComponentModel.ISupportInitialize)pbLogo).BeginInit();
             pnMain.SuspendLayout();
             SuspendLayout();
@@ -57,56 +57,12 @@
             pnMain.Controls.Add(btnLogin);
             pnMain.Controls.Add(txtPass);
             pnMain.Controls.Add(lbPass);
-            pnMain.Controls.Add(txtlogin);
+            pnMain.Controls.Add(txtLogin);
             pnMain.Controls.Add(lbLogin);
             pnMain.Location = new Point(28, 118);
             pnMain.Name = "pnMain";
             pnMain.Size = new Size(329, 219);
             pnMain.TabIndex = 1;
-            // 
-            // lbLogin
-            // 
-            lbLogin.AutoSize = true;
-            lbLogin.Location = new Point(138, 15);
-            lbLogin.Name = "lbLogin";
-            lbLogin.Size = new Size(52, 19);
-            lbLogin.TabIndex = 0;
-            lbLogin.Text = "Логин";
-            // 
-            // txtlogin
-            // 
-            txtlogin.Location = new Point(39, 40);
-            txtlogin.Name = "txtlogin";
-            txtlogin.Size = new Size(250, 26);
-            txtlogin.TabIndex = 1;
-            // 
-            // lbPass
-            // 
-            lbPass.AutoSize = true;
-            lbPass.Location = new Point(135, 72);
-            lbPass.Name = "lbPass";
-            lbPass.Size = new Size(58, 19);
-            lbPass.TabIndex = 2;
-            lbPass.Text = "Пароль";
-            // 
-            // txtPass
-            // 
-            txtPass.Location = new Point(39, 97);
-            txtPass.Name = "txtPass";
-            txtPass.Size = new Size(250, 26);
-            txtPass.TabIndex = 3;
-            txtPass.UseSystemPasswordChar = true;
-            // 
-            // btnLogin
-            // 
-            btnLogin.BackColor = Color.FromArgb(67, 97, 238);
-            btnLogin.FlatStyle = FlatStyle.Flat;
-            btnLogin.Location = new Point(89, 129);
-            btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(150, 30);
-            btnLogin.TabIndex = 4;
-            btnLogin.Text = "Войти";
-            btnLogin.UseVisualStyleBackColor = false;
             // 
             // btnGuest
             // 
@@ -118,6 +74,52 @@
             btnGuest.TabIndex = 5;
             btnGuest.Text = "Войти как гость";
             btnGuest.UseVisualStyleBackColor = false;
+            btnGuest.Click += BtnGuest_Click;
+            // 
+            // btnLogin
+            // 
+            btnLogin.BackColor = Color.FromArgb(67, 97, 238);
+            btnLogin.FlatStyle = FlatStyle.Flat;
+            btnLogin.Location = new Point(89, 129);
+            btnLogin.Name = "btnLogin";
+            btnLogin.Size = new Size(150, 30);
+            btnLogin.TabIndex = 4;
+            btnLogin.Text = "Войти";
+            btnLogin.UseVisualStyleBackColor = false;
+            btnLogin.Click += BtnLogin_Click;
+            // 
+            // txtPass
+            // 
+            txtPass.Location = new Point(39, 97);
+            txtPass.Name = "txtPass";
+            txtPass.Size = new Size(250, 26);
+            txtPass.TabIndex = 3;
+            txtPass.UseSystemPasswordChar = true;
+            // 
+            // lbPass
+            // 
+            lbPass.AutoSize = true;
+            lbPass.Location = new Point(135, 72);
+            lbPass.Name = "lbPass";
+            lbPass.Size = new Size(58, 19);
+            lbPass.TabIndex = 2;
+            lbPass.Text = "Пароль";
+            // 
+            // txtLogin
+            // 
+            txtLogin.Location = new Point(39, 40);
+            txtLogin.Name = "txtLogin";
+            txtLogin.Size = new Size(250, 26);
+            txtLogin.TabIndex = 1;
+            // 
+            // lbLogin
+            // 
+            lbLogin.AutoSize = true;
+            lbLogin.Location = new Point(138, 15);
+            lbLogin.Name = "lbLogin";
+            lbLogin.Size = new Size(52, 19);
+            lbLogin.TabIndex = 0;
+            lbLogin.Text = "Логин";
             // 
             // FormLogin
             // 
@@ -128,7 +130,7 @@
             Controls.Add(pnMain);
             Controls.Add(pbLogo);
             Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "FormLogin";
@@ -145,7 +147,7 @@
         private PictureBox pbLogo;
         private Panel pnMain;
         private Label lbPass;
-        private TextBox txtlogin;
+        private TextBox txtLogin;
         private Label lbLogin;
         private Button btnLogin;
         private TextBox txtPass;

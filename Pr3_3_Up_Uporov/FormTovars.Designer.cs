@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             panelTop = new Panel();
-            btnLogut = new Button();
             lblUserName = new Label();
+            btnLogut = new Button();
             dgvTovars = new DataGridView();
             panelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTovars).BeginInit();
@@ -48,6 +48,17 @@
             panelTop.Size = new Size(964, 40);
             panelTop.TabIndex = 0;
             // 
+            // lblUserName
+            // 
+            lblUserName.AutoSize = true;
+            lblUserName.Dock = DockStyle.Right;
+            lblUserName.Location = new Point(769, 0);
+            lblUserName.Name = "lblUserName";
+            lblUserName.Size = new Size(45, 19);
+            lblUserName.TabIndex = 1;
+            lblUserName.Text = "label1";
+            lblUserName.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // btnLogut
             // 
             btnLogut.BackColor = Color.FromArgb(67, 97, 238);
@@ -59,17 +70,7 @@
             btnLogut.TabIndex = 0;
             btnLogut.Text = "Выход";
             btnLogut.UseVisualStyleBackColor = false;
-            // 
-            // lblUserName
-            // 
-            lblUserName.AutoSize = true;
-            lblUserName.Dock = DockStyle.Right;
-            lblUserName.Location = new Point(769, 0);
-            lblUserName.Name = "lblUserName";
-            lblUserName.Size = new Size(45, 19);
-            lblUserName.TabIndex = 1;
-            lblUserName.Text = "label1";
-            lblUserName.TextAlign = ContentAlignment.MiddleRight;
+            btnLogut.Click += BtnLogut_Click;
             // 
             // dgvTovars
             // 
@@ -94,7 +95,7 @@
             Controls.Add(dgvTovars);
             Controls.Add(panelTop);
             Font = new Font("Times New Roman", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "FormTovars";
             Padding = new Padding(10);
             StartPosition = FormStartPosition.CenterScreen;

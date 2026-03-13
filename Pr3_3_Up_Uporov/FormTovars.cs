@@ -1,18 +1,206 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.ApplicationServices;
+using Pr3_3_Up_Uporov.Models;
+using Pr3_3_Up_Uporov.Properties;
 
 namespace Pr3_3_Up_Uporov
 {
     public partial class FormTovars : Form
     {
-        public FormTovars()
+        public User CurrentUser { get; private set; }
+        public bool IsGuest { get; private set; }
+
+        public FormTovars(User user, bool guest)
         {
             InitializeComponent();
+
+            var colPhoto = new DataGridViewImageColumn();
+            colPhoto.Name = "colPhoto";
+            colPhoto.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            colPhoto.Width = 200;
+            colPhoto.FillWeight = 30;
+
+            var colInfo = new DataGridViewTextBoxColumn();
+            colInfo.Name = "colInfo";
+            colInfo.FillWeight = 60;
+            colInfo.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+            var colDiscount = new DataGridViewTextBoxColumn();
+            colDiscount.Name = "colDiscount";
+            colDiscount.FillWeight = 10;
+            colDiscount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            dgvTovars.Columns.AddRange(
+            [
+                colPhoto, colInfo, colDiscount
+            ]);
+
+            dgvTovars.CellFormatting += DgvTovars_CellFormatting;
+
+            CurrentUser = user;
+            IsGuest = guest;
+
+            lblUserName.Text = IsGuest ? "Гость" : CurrentUser.FullName;
+
+            LoadTovars();
+        }
+
+        private void LoadTovars()
+        {
+            try
+            {
+                using (var db = new StoreSportUporovContext())
+                {
+                    var tovars = db.SportTovars
+                        .Include(i => i.TovarCategory)
+                        .Include(i => i.TovarManufacture)
+                        .Include(i => i.TovarSupliers)
+                        .Include(i => i.Measure)
+                        .ToList();
+
+                    dgvTovars.SuspendLayout();
+                    dgvTovars.Rows.Clear();
+
+                    foreach (var product in tovars)
+                    {
+                        int rowIndex = dgvTovars.Rows.Add();
+                        var row = dgvTovars.Rows[rowIndex];
+
+                        row.Cells["colPhoto"].Value = LoadTovarImage(product.PhotoUrl);
+                        row.Cells["colInfo"].Value = FormatTovarInfo(product);
+                        row.Cells["colDiscount"].Value = $"{product.Discount}%";
+                        row.Cells["colDiscount"].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                        // Сохраняем объект товара в тег строки для использования при форматировании
+                        row.Tag = product;
+
+                        ApplyRowStyles(row, product);
+                    }
+
+                    dgvTovars.ResumeLayout();
+                    dgvTovars.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ApplyRowStyles(DataGridViewRow row, SportTovar tovar)
+        {
+            // Сначала проверяем наличие товара на складе - это наивысший приоритет
+            if (tovar.CointInStock <= 0)
+            {
+                row.DefaultCellStyle.BackColor = Color.LightBlue;
+                row.DefaultCellStyle.ForeColor = Color.Black;
+                // Для товаров не в наличии другие стили не применяем
+                return;
+            }
+
+            // Затем проверяем скидку больше 15%
+            if (tovar.Discount > 15)
+            {
+                row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#2E8B57");
+                row.DefaultCellStyle.ForeColor = Color.White;
+            }
+            else
+            {
+                // Сбрасываем фон, если не подходит под условия
+                row.DefaultCellStyle.BackColor = Color.White;
+                row.DefaultCellStyle.ForeColor = Color.Black;
+            }
+
+            // Оформление ячейки со скидкой
+            if (tovar.Discount > 0)
+            {
+                row.Cells["colDiscount"].Style.ForeColor = Color.Red;
+                row.Cells["colDiscount"].Style.Font = new Font(
+                    "Times New Roman",
+                    12,
+                    FontStyle.Bold);
+            }
+            else
+            {
+                // Сбрасываем стиль скидки, если скидки нет
+                row.Cells["colDiscount"].Style.ForeColor = Color.Black;
+                row.Cells["colDiscount"].Style.Font = new Font(
+                    "Times New Roman",
+                    12,
+                    FontStyle.Regular);
+            }
+        }
+
+        private string FormatTovarInfo(SportTovar tovar)
+        {
+            string priceText;
+
+            if (tovar.Discount > 0)
+            {
+                decimal finalPrice = tovar.Price * (100 - tovar.Discount) / 100;
+                // Используем HTML-подобные теги для форматирования в ячейке
+                // Перечеркнутая цена будет красной, итоговая цена будет жирной черной
+                priceText = $"Цена: <strike><color=red>{tovar.Price:C}</color></strike> <b><color=black>{finalPrice:C}</color></b>";
+            }
+            else
+            {
+                priceText = $"Цена: {tovar.Price:C}";
+            }
+
+            return $"{tovar.TovarCategory.CategoryName}" + Environment.NewLine +
+                $"Описание товара: {tovar.Description}" + Environment.NewLine +
+                $"Производитель: {tovar.TovarManufacture.ManufacturesName}" + Environment.NewLine +
+                $"Поставщик: {tovar.TovarSupliers.SupliersName}" + Environment.NewLine +
+                $"{priceText}" + Environment.NewLine +
+                $"Единица измерения: {tovar.Measure.MeasureName}" + Environment.NewLine +
+                $"Количество на складе: {tovar.CointInStock}" + Environment.NewLine;
+        }
+
+        private void DgvTovars_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Дополнительное форматирование для ячейки с информацией
+            if (dgvTovars.Columns[e.ColumnIndex].Name == "colInfo" && e.Value != null)
+            {
+                // Здесь можно добавить дополнительное форматирование, 
+                // если DataGridView поддерживает HTML-форматирование
+            }
+        }
+
+        private Image LoadTovarImage(string photoUrl)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(photoUrl))
+                {
+                    string fileName = System.IO.Path.GetFileNameWithoutExtension(photoUrl);
+
+                    // Пытаемся загрузить из ресурсов
+                    var resourceProperty = Resources.ResourceManager.GetObject(fileName) as Image;
+                    if (resourceProperty != null)
+                    {
+                        return resourceProperty;
+                    }
+
+                    // Если не нашли в ресурсах, пробуем загрузить из файла
+                    if (System.IO.File.Exists(photoUrl))
+                    {
+                        return Image.FromFile(photoUrl);
+                    }
+                }
+
+                // Возвращаем картинку-заглушку
+                return Resources.picture;
+            }
+            catch
+            {
+                return Resources.picture;
+            }
+        }
+
+        private void BtnLogut_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }
