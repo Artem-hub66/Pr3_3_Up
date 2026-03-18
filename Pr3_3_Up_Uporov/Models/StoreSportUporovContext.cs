@@ -87,30 +87,30 @@ public partial class StoreSportUporovContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Code).HasColumnName("code");
+            entity.Property(e => e.IdPickUpPoint).HasColumnName("id_pick_up_point");
+            entity.Property(e => e.IdUser)
+                .HasMaxLength(250)
+                .HasColumnName("id_user");
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(50)
                 .HasColumnName("order_status");
-            entity.Property(e => e.PickUpPointId).HasColumnName("pick_up_point_id");
-            entity.Property(e => e.UserFioId)
-                .HasMaxLength(250)
-                .HasColumnName("user_fio_id");
+
+            entity.HasOne(d => d.PickUpPoint).WithMany(p => p.OrdersHistories)
+                .HasForeignKey(d => d.IdPickUpPoint)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_orders_history_to_pick_up_points");
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrdersHistories)
+                .HasPrincipalKey(p => p.UserFio)
+                .HasForeignKey(d => d.IdUser)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_orders_history_to_users");
 
             entity.HasOne(d => d.OrderStatusNavigation).WithMany(p => p.OrdersHistories)
                 .HasPrincipalKey(p => p.StatusName)
                 .HasForeignKey(d => d.OrderStatus)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fk_orders_history_to_order_statuses");
-
-            entity.HasOne(d => d.PickUpPoint).WithMany(p => p.OrdersHistories)
-                .HasForeignKey(d => d.PickUpPointId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("fk_orders_history_to_pick_up_points");
-
-            entity.HasOne(d => d.UserFio).WithMany(p => p.OrdersHistories)
-                .HasPrincipalKey(p => p.UserFio)
-                .HasForeignKey(d => d.UserFioId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("fk_orders_history_to_users");
         });
 
         modelBuilder.Entity<PickUpPoint>(entity =>
@@ -119,12 +119,12 @@ public partial class StoreSportUporovContext : DbContext
 
             entity.ToTable("pick_up_points");
 
-            entity.HasIndex(e => e.Adress, "pick_up_points_adress_key").IsUnique();
+            entity.HasIndex(e => e.Address, "pick_up_points_adress_key").IsUnique();
 
             entity.HasIndex(e => e.PhoneNumber, "pick_up_points_phone_number_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Adress).HasColumnName("adress");
+            entity.Property(e => e.Address).HasColumnName("address");
             entity.Property(e => e.PhoneNumber).HasColumnName("phone_number");
         });
 
@@ -159,34 +159,32 @@ public partial class StoreSportUporovContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Article).HasColumnName("article");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Discount)
-                .HasMaxLength(50)
-                .HasColumnName("discount");
-            entity.Property(e => e.PhotoUrl).HasColumnName("PhotoURL");
+            entity.Property(e => e.Discount).HasColumnName("discount");
+            entity.Property(e => e.IdCategory).HasColumnName("id_category");
+            entity.Property(e => e.IdManufacture).HasColumnName("id_manufacture");
+            entity.Property(e => e.IdSupliers).HasColumnName("id_supliers");
+            entity.Property(e => e.Photo).HasColumnName("photo");
             entity.Property(e => e.Price)
                 .HasColumnType("money")
                 .HasColumnName("price");
             entity.Property(e => e.QuantityInStock).HasColumnName("quantity_in_stock");
-            entity.Property(e => e.TovarCategory).HasColumnName("tovar_category");
-            entity.Property(e => e.TovarManufacture).HasColumnName("tovar_manufacture");
             entity.Property(e => e.TovarName).HasColumnName("tovar_name");
-            entity.Property(e => e.TovarSupliers).HasColumnName("tovar_supliers");
             entity.Property(e => e.UnitOfMeasurement)
                 .HasMaxLength(10)
                 .HasColumnName("unit_of_measurement");
 
-            entity.HasOne(d => d.TovarCategoryNavigation).WithMany(p => p.SportTovars)
-                .HasForeignKey(d => d.TovarCategory)
+            entity.HasOne(d => d.Category).WithMany(p => p.SportTovars)
+                .HasForeignKey(d => d.IdCategory)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fk_sport_tovars_to_categories");
 
-            entity.HasOne(d => d.TovarManufactureNavigation).WithMany(p => p.SportTovars)
-                .HasForeignKey(d => d.TovarManufacture)
+            entity.HasOne(d => d.Manufacture).WithMany(p => p.SportTovars)
+                .HasForeignKey(d => d.IdManufacture)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fk_sport_tovars_to_manufactures");
 
-            entity.HasOne(d => d.TovarSupliersNavigation).WithMany(p => p.SportTovars)
-                .HasForeignKey(d => d.TovarSupliers)
+            entity.HasOne(d => d.Suplier).WithMany(p => p.SportTovars)
+                .HasForeignKey(d => d.IdSupliers)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fk_sport_tovars_to_supliers");
         });
@@ -211,21 +209,21 @@ public partial class StoreSportUporovContext : DbContext
 
             entity.HasIndex(e => e.UserFio, "users_user_fio_key").IsUnique();
 
-            entity.HasIndex(e => e.UserLogin, "users_user_login_key").IsUnique();
+            entity.HasIndex(e => e.Login, "users_user_login_key").IsUnique();
 
-            entity.HasIndex(e => e.UserPassword, "users_user_password_key").IsUnique();
+            entity.HasIndex(e => e.Password, "users_user_password_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IdRole).HasColumnName("id_role");
+            entity.Property(e => e.Login)
+                .HasMaxLength(100)
+                .HasColumnName("login");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .HasColumnName("password");
             entity.Property(e => e.UserFio)
                 .HasMaxLength(250)
                 .HasColumnName("user_fio");
-            entity.Property(e => e.UserLogin)
-                .HasMaxLength(100)
-                .HasColumnName("user_login");
-            entity.Property(e => e.UserPassword)
-                .HasMaxLength(50)
-                .HasColumnName("user_password");
 
             entity.HasOne(d => d.IdRoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.IdRole)

@@ -11,27 +11,27 @@ public partial class SportTovar
 
     public string TovarName { get; set; } = null!;
 
-    public int? TovarCategory { get; set; }
+    public int? IdCategory { get; set; }
 
-    public int? TovarManufacture { get; set; }
+    public int? IdManufacture { get; set; }
 
-    public int? TovarSupliers { get; set; }
+    public int? IdSupliers { get; set; }
 
     public decimal Price { get; set; }
 
     public string UnitOfMeasurement { get; set; } = null!;
 
-    public string? Discount { get; set; }
-
     public int QuantityInStock { get; set; }
 
     public string Description { get; set; } = null!;
 
-    public string? PhotoUrl { get; set; }
+    public string? Photo { get; set; }
 
-    public virtual Category? TovarCategoryNavigation { get; set; }
+    public int? Discount { get; set; }
 
-    public virtual Manufacture? TovarManufactureNavigation { get; set; }
+    public virtual Category? Category { get; set; }
 
-    public virtual Suplier? TovarSupliersNavigation { get; set; }
+    public virtual Manufacture? Manufacture { get; set; }
+
+    public virtual Suplier? Suplier { get; set; }
 }

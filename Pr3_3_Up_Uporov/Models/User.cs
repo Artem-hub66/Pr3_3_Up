@@ -11,9 +11,9 @@ public partial class User
 
     public string UserFio { get; set; } = null!;
 
-    public string UserLogin { get; set; } = null!;
+    public string Login { get; set; } = null!;
 
-    public string UserPassword { get; set; } = null!;
+    public string Password { get; set; } = null!;
 
     public virtual Role IdRoleNavigation { get; set; } = null!;
 

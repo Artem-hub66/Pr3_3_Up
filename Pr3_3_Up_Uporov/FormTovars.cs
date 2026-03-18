@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.ApplicationServices;
 using Pr3_3_Up_Uporov.Models;
 using Pr3_3_Up_Uporov.Properties;
+using User = Pr3_3_Up_Uporov.Models.User;
 
 namespace Pr3_3_Up_Uporov
 {
@@ -35,12 +35,12 @@ namespace Pr3_3_Up_Uporov
                 colPhoto, colInfo, colDiscount
             ]);
 
-            dgvTovars.CellFormatting += DgvTovars_CellFormatting;
+            //dgvTovars.CellFormatting += DgvTovars_CellFormatting;
 
             CurrentUser = user;
             IsGuest = guest;
 
-            lblUserName.Text = IsGuest ? "Гость" : CurrentUser.FullName;
+            lblUserName.Text = IsGuest ? "Гость" : CurrentUser.UserFio;
 
             LoadTovars();
         }
@@ -52,10 +52,10 @@ namespace Pr3_3_Up_Uporov
                 using (var db = new StoreSportUporovContext())
                 {
                     var tovars = db.SportTovars
-                        .Include(i => i.TovarCategory)
-                        .Include(i => i.TovarManufacture)
-                        .Include(i => i.TovarSupliers)
-                        .Include(i => i.Measure)
+                        .Include(i => i.Category)
+                        .Include(i => i.Category)
+                        .Include(i => i.Manufacture)
+                        .Include(i => i.Suplier)
                         .ToList();
 
                     dgvTovars.SuspendLayout();
@@ -66,7 +66,7 @@ namespace Pr3_3_Up_Uporov
                         int rowIndex = dgvTovars.Rows.Add();
                         var row = dgvTovars.Rows[rowIndex];
 
-                        row.Cells["colPhoto"].Value = LoadTovarImage(product.PhotoUrl);
+                        row.Cells["colPhoto"].Value = LoadTovarImage(product.Photo);
                         row.Cells["colInfo"].Value = FormatTovarInfo(product);
                         row.Cells["colDiscount"].Value = $"{product.Discount}%";
                         row.Cells["colDiscount"].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -90,7 +90,7 @@ namespace Pr3_3_Up_Uporov
         private void ApplyRowStyles(DataGridViewRow row, SportTovar tovar)
         {
             // Сначала проверяем наличие товара на складе - это наивысший приоритет
-            if (tovar.CointInStock <= 0)
+            if (tovar.QuantityInStock <= 0)
             {
                 row.DefaultCellStyle.BackColor = Color.LightBlue;
                 row.DefaultCellStyle.ForeColor = Color.Black;
@@ -137,34 +137,31 @@ namespace Pr3_3_Up_Uporov
 
             if (tovar.Discount > 0)
             {
-                decimal finalPrice = tovar.Price * (100 - tovar.Discount) / 100;
-                // Используем HTML-подобные теги для форматирования в ячейке
-                // Перечеркнутая цена будет красной, итоговая цена будет жирной черной
-                priceText = $"Цена: <strike><color=red>{tovar.Price:C}</color></strike> <b><color=black>{finalPrice:C}</color></b>";
+                decimal finalPrice = (decimal)(tovar.Price * (100 - tovar.Discount) / 100);
+                priceText = $"Цена: {tovar.Price:C} -> {finalPrice:C} ";
             }
             else
             {
                 priceText = $"Цена: {tovar.Price:C}";
             }
 
-            return $"{tovar.TovarCategory.CategoryName}" + Environment.NewLine +
+            return $"Категория: {tovar.Category.CategoryName}" + Environment.NewLine +
                 $"Описание товара: {tovar.Description}" + Environment.NewLine +
-                $"Производитель: {tovar.TovarManufacture.ManufacturesName}" + Environment.NewLine +
-                $"Поставщик: {tovar.TovarSupliers.SupliersName}" + Environment.NewLine +
+                $"Производитель: {tovar.Manufacture.ManufacturesName}" + Environment.NewLine +
+                $"Поставщик: {tovar.Suplier.SupliersName}" + Environment.NewLine +
                 $"{priceText}" + Environment.NewLine +
-                $"Единица измерения: {tovar.Measure.MeasureName}" + Environment.NewLine +
-                $"Количество на складе: {tovar.CointInStock}" + Environment.NewLine;
+                $"Количество на складе: {tovar.QuantityInStock}" + Environment.NewLine;
         }
 
-        private void DgvTovars_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            // Дополнительное форматирование для ячейки с информацией
-            if (dgvTovars.Columns[e.ColumnIndex].Name == "colInfo" && e.Value != null)
-            {
-                // Здесь можно добавить дополнительное форматирование, 
-                // если DataGridView поддерживает HTML-форматирование
-            }
-        }
+        //private void DgvTovars_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        //{
+        //    // Дополнительное форматирование для ячейки с информацией
+        //    //if (dgvTovars.Columns[e.ColumnIndex].Name == "colInfo" && e.Value != null)
+        //    //{
+        //    //    // Здесь можно добавить дополнительное форматирование, 
+        //    //    // если DataGridView поддерживает HTML-форматирование
+        //    //}
+        //}
 
         private Image LoadTovarImage(string photoUrl)
         {

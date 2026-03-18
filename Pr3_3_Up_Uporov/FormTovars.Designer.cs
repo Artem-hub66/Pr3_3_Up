@@ -74,7 +74,12 @@
             // 
             // dgvTovars
             // 
+            dgvTovars.AllowUserToAddRows = false;
+            dgvTovars.AllowUserToDeleteRows = false;
+            dgvTovars.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTovars.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dgvTovars.BackgroundColor = Color.FromArgb(233, 245, 255);
+            dgvTovars.BorderStyle = BorderStyle.None;
             dgvTovars.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvTovars.ColumnHeadersVisible = false;
             dgvTovars.Dock = DockStyle.Fill;

@@ -7,17 +7,17 @@ public partial class OrdersHistory
 {
     public int Id { get; set; }
 
-    public int? PickUpPointId { get; set; }
+    public int? IdPickUpPoint { get; set; }
 
-    public string? UserFioId { get; set; }
+    public string? IdUser { get; set; }
 
     public int Code { get; set; }
 
     public string? OrderStatus { get; set; }
 
-    public virtual OrderStatus? OrderStatusNavigation { get; set; }
-
     public virtual PickUpPoint? PickUpPoint { get; set; }
 
-    public virtual User? UserFio { get; set; }
+    public virtual User? User { get; set; }
+
+    public virtual OrderStatus? OrderStatusNavigation { get; set; }
 }

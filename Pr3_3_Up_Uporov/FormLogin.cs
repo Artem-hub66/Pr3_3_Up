@@ -22,7 +22,7 @@ namespace Pr3_3_Up_Uporov
 
             using (var db = new StoreSportUporovContext())
             {
-                var user = db.Users.Where(w => w.UserLogin == txtLogin.Text && w.UserPassword == txtPass.Text).FirstOrDefault();
+                var user = db.Users.Where(w => w.Login == txtLogin.Text && w.Password == txtPass.Text).FirstOrDefault();
 
                 if (user != null)
                 {

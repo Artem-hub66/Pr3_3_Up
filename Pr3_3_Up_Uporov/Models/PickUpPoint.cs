@@ -7,7 +7,7 @@ public partial class PickUpPoint
 {
     public int Id { get; set; }
 
-    public string Adress { get; set; } = null!;
+    public string Address { get; set; } = null!;
 
     public string PhoneNumber { get; set; } = null!;
 
